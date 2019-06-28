@@ -52,24 +52,6 @@ class Joke extends Component {
   getEmoji = () => {
     return this.props.emojiClasses[this._getIndex()];
   };
-  /*getEmoji() {
-    const {votes, emojiClasses} = this.props;
-    if (this.props.votes >= 15) {
-      return "em em-rolling_on_the_floor_laughing";
-    } else if (this.props.votes >= 12) {
-      return "em em-laughing";
-    } else if (this.props.votes >= 9) {
-      return "em em-smiley";
-    } else if (this.props.votes >= 6) {
-      return "em em-slightly_smiling_face";
-    } else if (this.props.votes >= 3) {
-      return "em em-neutral_face";
-    } else if (this.props.votes >= 0) {
-      return "em em-confused";
-    } else {
-      return "em em-angry";
-    }
-  }*/
 
   render() {
     const { text, votes } = this.props;
@@ -77,19 +59,19 @@ class Joke extends Component {
     return (
       <div className="Joke">
         <div className="Joke-buttons">
-          <button className="Joke-button" onClick={this.handleUpClick}>
+          <button className="Joke-button Joke-button-up" onClick={this.handleUpClick}>
             <FontAwesomeIcon icon={faArrowUp} />
           </button>
           <span className="Joke-votes" style={{ borderColor: this.getColor() }}>
             {votes}
           </span>
-          <button className="Joke-button" onClick={this.handleDownClick}>
+          <button className="Joke-button Joke-button-down" onClick={this.handleDownClick}>
             <FontAwesomeIcon icon={faArrowDown} />
           </button>
         </div>
         <div className="Joke-text">{text}</div>
         <div className="Joke-smiley">
-          <i class={`em em-${this.getEmoji()}`} />
+          <i className={`em em-${this.getEmoji()}`} />
         </div>
       </div>
     );
