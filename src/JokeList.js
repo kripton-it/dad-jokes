@@ -12,37 +12,50 @@ class JokeList extends Component {
 
   state = {
     jokes: JSON.parse(window.localStorage.getItem("jokes") || "[]"),
-    isLoading: false,
+    isLoading: false
   };
 
+  jokesSet = new Set(this.state.jokes.map(({ id }) => id));
+
   getJokes = async () => {
-    const jokes = new Set(this.state.jokes);
-    const newJokes = new Set();
-    while (newJokes.size < this.props.jokesNumberToGet) {
-      const response = await axios.get("https://icanhazdadjoke.com/", {
-        headers: {
-          Accept: "application/json"
+    try {
+      const jokes = [];
+      while (jokes.length < this.props.jokesNumberToGet) {
+        const response = await axios.get("https://icanhazdadjoke.com/", {
+          headers: {
+            Accept: "application/json"
+          }
+        });
+        const { id, joke } = response.data;
+        if (!this.jokesSet.has(id)) {
+          this.jokesSet.add(id);
+          jokes.push({ id, text: joke, votes: 0 });
         }
-      });
-      const { id, joke } = response.data;
-      if (!jokes.has(joke) && !newJokes.has(joke)) {
-        newJokes.add({ id, text: joke, votes: 0 });
       }
+      return [...this.state.jokes, ...jokes];
+    } catch (err) {
+      alert(err);
+      return this.state.jokes;
     }
-    return [...jokes, ...newJokes];
   };
 
   fetchJokes = () => {
-    this.setState({
-      isLoading: true,
-    }, async () => {
-      const jokes = await this.getJokes();
-      this.setState(() => ({
-        jokes,
-        isLoading: false,
-      }), this.updateLocalStorage);
-    });
-  }
+    this.setState(
+      {
+        isLoading: true
+      },
+      async () => {
+        const jokes = await this.getJokes();
+        this.setState(
+          () => ({
+            jokes,
+            isLoading: false
+          }),
+          this.updateLocalStorage
+        );
+      }
+    );
+  };
 
   async componentDidMount() {
     if (this.state.jokes.length === 0) {
@@ -51,11 +64,14 @@ class JokeList extends Component {
   }
 
   _changeVote = (id, delta) => {
-    this.setState(({ jokes }) => ({
-      jokes: jokes.map(joke =>
-        joke.id === id ? { ...joke, votes: joke.votes + +delta } : joke
-      )
-    }), this.updateLocalStorage);
+    this.setState(
+      ({ jokes }) => ({
+        jokes: jokes.map(joke =>
+          joke.id === id ? { ...joke, votes: joke.votes + +delta } : joke
+        )
+      }),
+      this.updateLocalStorage
+    );
   };
 
   upVote = id => {
@@ -72,16 +88,22 @@ class JokeList extends Component {
 
   updateLocalStorage = () => {
     window.localStorage.setItem("jokes", JSON.stringify(this.state.jokes));
+  };
+
+  sortJokes = () => {
+    return [...this.state.jokes].sort((a, b) => b.votes - a.votes);
   }
 
   render() {
     if (this.state.isLoading) {
-      return <div className="JokeList-spinner">
-        <FontAwesomeIcon icon={faLaugh} spin size="8x" />
-        <h1 className="JokeList-spinner-text">Wait for a moment...</h1>
-      </div>
+      return (
+        <div className="JokeList-spinner">
+          <FontAwesomeIcon icon={faLaugh} spin size="8x" />
+          <h1 className="JokeList-spinner-text">Wait for a moment...</h1>
+        </div>
+      );
     }
-    const jokes = this.state.jokes.map(joke => (
+    const jokes = this.sortJokes().map(joke => (
       <Joke
         key={joke.id}
         {...joke}
@@ -100,7 +122,9 @@ class JokeList extends Component {
             src="https://assets.dryicons.com/uploads/icon/svg/8927/0eb14c71-38f2-433a-bfc8-23d9c99b3647.svg"
             alt="Dad Jokes"
           />
-          <button className="JokeList-add" onClick={this.handleNewJokesClick}>New Jokes</button>
+          <button className="JokeList-add" onClick={this.handleNewJokesClick}>
+            New Jokes
+          </button>
         </div>
         <div className="JokeList-jokes">{jokes}</div>
       </div>
