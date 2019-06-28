@@ -48,7 +48,7 @@ class JokeList extends Component {
         const jokes = await this.getJokes();
         this.setState(
           () => ({
-            jokes,
+            jokes: jokes.sort((a, b) => b.votes - a.votes),
             isLoading: false
           }),
           this.updateLocalStorage
@@ -90,10 +90,6 @@ class JokeList extends Component {
     window.localStorage.setItem("jokes", JSON.stringify(this.state.jokes));
   };
 
-  sortJokes = () => {
-    return [...this.state.jokes].sort((a, b) => b.votes - a.votes);
-  }
-
   render() {
     if (this.state.isLoading) {
       return (
@@ -103,7 +99,7 @@ class JokeList extends Component {
         </div>
       );
     }
-    const jokes = this.sortJokes().map(joke => (
+    const jokes = this.state.jokes.map(joke => (
       <Joke
         key={joke.id}
         {...joke}
@@ -123,7 +119,7 @@ class JokeList extends Component {
             alt="Dad Jokes"
           />
           <button className="JokeList-add" onClick={this.handleNewJokesClick}>
-            New Jokes
+            Fetch Jokes
           </button>
         </div>
         <div className="JokeList-jokes">{jokes}</div>

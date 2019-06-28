@@ -39,7 +39,7 @@
   border: none;
   font-size: 1.5em;
   cursor: pointer;
-  transition: opacity 0.5s;
+  transition: all 0.3s;
   opacity: 0.5;
   outline: none;
 }
@@ -48,14 +48,24 @@
   color: green;
 }
 
+.Joke-button-up:hover {
+  animation-name: move-up;
+}
+
 .Joke-button-down {
   color: red;
+}
+
+.Joke-button-down:hover {
+  animation-name: move-down;
 }
 
 .Joke-button:hover,
 .Joke-button:focus,
 .Joke-button:active {
   opacity: 1;
+  animation-duration: 0.7s;
+  animation-timing-function: ease-out;
 }
 
 .Joke-smiley {
@@ -63,4 +73,52 @@
   margin-left: auto;
   border-radius: 50%;
   box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.1);
+}
+
+.Joke-smiley:hover {
+  animation-name: spin;
+  animation-duration: 0.7s;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes move-up {
+  0%,
+  50%,
+  100% {
+    transform: translateY(0);
+  }
+  25%,
+  75% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes move-down {
+  0%,
+  50%,
+  100% {
+    transform: translateY(0);
+  }
+  25%,
+  75% {
+    transform: translateY(3px);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  30% {
+    transform: rotate(20deg);
+  }
+  60% {
+    transform: rotate(0deg);
+  }
+  80% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
