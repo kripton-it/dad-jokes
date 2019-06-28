@@ -9,10 +9,10 @@ class JokeList extends Component {
   };
 
   state = {
-    jokes: []
+    jokes: JSON.parse(window.localStorage.getItem("jokes") || "[]")
   };
 
-  async componentDidMount() {
+  getJokes = async () => {
     const jokes = [];
     while (jokes.length < this.props.jokesNumberToGet) {
       const response = await axios.get("https://icanhazdadjoke.com/", {
@@ -21,11 +21,21 @@ class JokeList extends Component {
         }
       });
       const { id, joke } = response.data;
-      jokes.every(joke => joke.id !== id) && jokes.push({ id, text: joke, votes: 0 });
+      if (jokes.every(joke => joke.id !== id)) {
+        jokes.push({ id, text: joke, votes: 0 });
+      }
     }
-    this.setState({
-      jokes
-    });
+    return jokes;
+  };
+
+  async componentDidMount() {
+    if (this.state.jokes.length === 0) {
+      const jokes = await this.getJokes();
+      this.setState({
+        jokes,
+      });
+      window.localStorage.setItem("jokes", JSON.stringify(jokes));
+    }
   }
 
   _changeVote = (id, delta) => {
@@ -36,17 +46,22 @@ class JokeList extends Component {
     }));
   };
 
-  upVote = (id) => {
+  upVote = id => {
     this._changeVote(id, 1);
-  }
+  };
 
-  downVote = (id) => {
+  downVote = id => {
     this._changeVote(id, -1);
-  }
+  };
 
   render() {
     const jokes = this.state.jokes.map(joke => (
-      <Joke key={joke.id} {...joke} upVote={this.upVote} downVote={this.downVote}/>
+      <Joke
+        key={joke.id}
+        {...joke}
+        upVote={this.upVote}
+        downVote={this.downVote}
+      />
     ));
 
     return (

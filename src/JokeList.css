@@ -1,12 +1,12 @@
 .JokeList {
   display: flex;
-  width: 80%;
+  width: 90%;
   height: 80%;
 }
 
 .JokeList-sidebar {
   z-index: 2;
-  width: 40%;
+  width: 35%;
   text-align: center;
   background-color: #9575cd;
   display: flex;
@@ -38,7 +38,7 @@
 }
 
 .JokeList-jokes {
-  width: 60%;
+  width: 65%;
   height: 90%;
   background-color: white;
   align-self: center;
