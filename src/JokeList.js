@@ -16,21 +16,20 @@ class JokeList extends Component {
   };
 
   getJokes = async () => {
-    const jokes = [...this.state.jokes];
-    let count = 0;
-    while (count < this.props.jokesNumberToGet) {
+    const jokes = new Set(this.state.jokes);
+    const newJokes = new Set();
+    while (newJokes.size < this.props.jokesNumberToGet) {
       const response = await axios.get("https://icanhazdadjoke.com/", {
         headers: {
           Accept: "application/json"
         }
       });
       const { id, joke } = response.data;
-      if (jokes.every(joke => joke.id !== id)) {
-        jokes.push({ id, text: joke, votes: 0 });
-        count++;
+      if (!jokes.has(joke) && !newJokes.has(joke)) {
+        newJokes.add({ id, text: joke, votes: 0 });
       }
     }
-    return jokes;
+    return [...jokes, ...newJokes];
   };
 
   fetchJokes = () => {
